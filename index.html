@@ -95,14 +95,46 @@
         }
     </style>
 
-    <script type="importmap">
-    {
-        "imports": {
-            "react": "https://esm.sh/react@18.3.1",
-            "react/jsx-runtime": "https://esm.sh/react@18.3.1/jsx-runtime",
-            "react-dom/client": "https://esm.sh/react-dom@18.3.1/client?external=react"
+        <script type="module">
+        const LOADER_NAMES = [
+            "Atom", "Commet", "FourSquare", "OrbitProgress", "Riple",
+            "ThreeDot", "TrophySpin", "Mosaic", "Slab", "BlinkBlur", "Pulse"
+        ];
+
+        try {
+            const [React, { createRoot }, Indicators] = await Promise.all([
+                import("react"),
+                import("react-dom/client"),
+                import("https://esm.sh/react-loading-indicators@1.0.1?external=react")
+            ]);
+
+            // Only use loaders that actually exist in the installed version
+            const available = LOADER_NAMES.filter(name => Indicators[name]);
+            const pick = available[Math.floor(Math.random() * available.length)];
+            const Loader = Indicators[pick];
+
+            const root = createRoot(document.getElementById("loader"));
+
+            root.render(
+                React.createElement(Loader, {
+                    color: "#285c3c",
+                    size: "large",
+                    text: false
+                })
+            );
+
+            window.loaderReady = true;
+            window.finishLoading();
+
+        } catch (error) {
+            console.error("Loading indicator failed:", error);
+
+            document.getElementById("loader").innerHTML =
+                '<div class="fallback-spinner"></div>';
+
+            window.loaderReady = true;
+            window.finishLoading();
         }
-    }
     </script>
 </head>
 
@@ -119,7 +151,7 @@
         <p id="loading-message"></p>
     </div>
 
-    <script>
+        <script>
         const messages = [
             "pls share my website",
             "dont snitch",
@@ -144,54 +176,31 @@
 
         document.getElementById("loading-message").textContent = message;
 
+        const EXTRA_LOAD_MS = 3000; // extra time the loader stays up after the site loads
+
         window.frameLoaded = false;
         window.loaderReady = false;
+        window.finishStarted = false;
 
         window.finishLoading = function () {
             if (!window.frameLoaded || !window.loaderReady) return;
+            if (window.finishStarted) return;
+            window.finishStarted = true;
 
-            const screen = document.getElementById("loading-screen");
-            screen.classList.add("hidden");
+            setTimeout(() => {
+                const screen = document.getElementById("loading-screen");
+                screen.classList.add("hidden");
 
-            screen.addEventListener("transitionend", () => {
-                screen.remove();
-            }, { once: true });
+                screen.addEventListener("transitionend", () => {
+                    screen.remove();
+                }, { once: true });
+            }, EXTRA_LOAD_MS);
         };
 
         document.getElementById("website").addEventListener("load", () => {
             window.frameLoaded = true;
             window.finishLoading();
         }, { once: true });
-    </script>
-
-    <script type="module">
-        import React from "react";
-        import { createRoot } from "react-dom/client";
-        import { Atom } from "https://esm.sh/react-loading-indicators@1.0.1?external=react";
-
-        try {
-            const root = createRoot(document.getElementById("loader"));
-
-            root.render(
-                React.createElement(Atom, {
-                    color: "#285c3c",
-                    size: "large",
-                    text: false
-                })
-            );
-
-            window.loaderReady = true;
-            window.finishLoading();
-
-        } catch (error) {
-            console.error("Loading indicator failed:", error);
-
-            document.getElementById("loader").innerHTML =
-                '<div class="fallback-spinner"></div>';
-
-            window.loaderReady = true;
-            window.finishLoading();
-        }
     </script>
 
 </body>
