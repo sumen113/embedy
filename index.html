@@ -6,6 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Daymap</title>
 
+    <!-- Use the Render website's favicon -->
+    <link rel="icon" href="https://daymapss-jysh.onrender.com/favicon.ico" type="image/x-icon">
+
     <style>
         * {
             box-sizing: border-box;
@@ -34,12 +37,10 @@
             position: fixed;
             inset: 0;
             z-index: 9999;
-
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-
             background: #000;
             opacity: 1;
             transition: opacity 0.5s ease;
@@ -60,7 +61,6 @@
         #loading-message {
             margin-top: 18px;
             padding: 0 20px;
-
             color: #8db99a;
             font-family: Inter, system-ui, sans-serif;
             font-size: 14px;
@@ -120,7 +120,6 @@
     </div>
 
     <script>
-        // Messages randomly selected whenever the page loads.
         const messages = [
             "pls share my website",
             "dont snitch",
@@ -145,7 +144,6 @@
 
         document.getElementById("loading-message").textContent = message;
 
-        // Wait for both the indicator and the website to load.
         window.frameLoaded = false;
         window.loaderReady = false;
 
@@ -153,7 +151,6 @@
             if (!window.frameLoaded || !window.loaderReady) return;
 
             const screen = document.getElementById("loading-screen");
-
             screen.classList.add("hidden");
 
             screen.addEventListener("transitionend", () => {
